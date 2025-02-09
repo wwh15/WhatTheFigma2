@@ -40,11 +40,7 @@ export default function TabLayout() {
         options={{
           title: "Recipes",
           tabBarIcon: ({color}) => (
-            <IconSymbol
-              size={28}
-              name="list"
-              color={color}
-            />
+            <IconSymbol size={28} name="list.bullet" color={color} />
           ),
         }}
       />
