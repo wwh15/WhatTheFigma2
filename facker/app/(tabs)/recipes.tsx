@@ -50,7 +50,7 @@ export default function Recipes() {
     setIsLoading(true);
 
     const ingredients = inventory.join(",");
-    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&ranking=2&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;
 
     try {
       const response = await fetch(url);
@@ -79,11 +79,10 @@ export default function Recipes() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedText type="title" style={styles.title}>
-        Recipe Finder
-      </ThemedText>
-
       <View style={styles.filterContainer}>
+        <ThemedText type="title" style={styles.title}>
+          Recipe Finder
+        </ThemedText>
         <TouchableOpacity style={styles.searchButton} onPress={fetchRecipes}>
           <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
             Find Recipes
