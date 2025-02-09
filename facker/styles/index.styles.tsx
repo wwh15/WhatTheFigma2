@@ -83,7 +83,9 @@ export default (theme: ColorSchemeName) =>
       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     },
     emptyPopupContainer: {
+      flex: 1,
       alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
       marginTop: 20,
     },
@@ -125,20 +127,19 @@ export default (theme: ColorSchemeName) =>
       padding: 10,
     },
     popupContainer: {
-      width: '50%', // Responsive width
-      height: '50%', // Fixed height for modal
+      width: '50%',
+      height: '50%',
       backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
       padding: 20,
       borderRadius: 12,
       alignItems: 'center',
       justifyContent: 'center',
-      overflow: 'hidden', // Prevents scrolling outside the modal
+      overflow: 'hidden',
     },
-    
     scrollableListContainer: {
-      flex: 1, // Allows the list to take up remaining space
+      flex: 1,
       width: '100%',
-      maxHeight: 250, // Limit the height so it doesn't overflow
+      maxHeight: '100%',
     },
     buttonRow: {
       flexDirection: "row",
