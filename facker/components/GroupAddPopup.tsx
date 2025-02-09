@@ -4,6 +4,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
+
 
 import createStyles from "../styles/index.styles";
 
@@ -19,10 +21,42 @@ export default function GroupAddPopup({
   const [expirationDate, setExpirationDate] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isScannerVisible, setScannerVisible] = useState(false); // State for barcode scanner
+  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
 
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
 
+ // Request camera permissions
+ useEffect(() => {
+  (async () => {
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    setHasPermission(status === "granted");
+  })();
+}, []);
+
+const modalStyles = StyleSheet.create({
+  camera: {
+    flex: 1,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    bottom: 50,
+    alignSelf: "center",
+    backgroundColor: "red",
+    padding: 12,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+});
   const handleDateChange = (_event: unknown, date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
@@ -33,11 +67,40 @@ export default function GroupAddPopup({
   // Adds example item when Camera button is pressed
   const addExampleItemsFromCamera = () => {
     setItems([...items, { name: "Example Item (Camera)", expires: "2025-03-01" }]);
-  };
+  }
 
   // Adds example item when Barcode button is pressed
-  const addExampleItemFromBarcode = () => {
-    setItems([...items, { name: "Example Item (Barcode)", expires: "2025-02-15" }]);
+  //const addExampleItemFromBarcode = () => {
+//
+  //  setItems([...items, { name: "Example Item (Barcode)", expires: "2025-02-15" }]);
+ // };
+
+ // Handle barcode scanning
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
+    setScannerVisible(false); // Close scanner after scanning
+
+    try {
+      // Fetch item details using an external API
+      const response = await fetch(
+        `https://api.upcitemdb.com/prod/trial/lookup?upc=${data}`
+      );
+      const json = await response.json();
+
+      if (json) {
+        const itemName = json.items[0].title || "Unknown Item";
+        setItems([
+          ...items,
+          { name: itemName, expires: "2025-12-31" }, // Arbitrary expiration date
+        ]);
+      } 
+      else {
+        Alert.alert("Error", "Unable to fetch item details for this barcode.");
+      }
+    } 
+    catch (error) {
+      //console.error("Error fetching barcode data:", error);
+      //Alert.alert("Error", "Failed to fetch item details. Try again.");
+    }
   };
 
   const addItemToList = () => {
@@ -77,11 +140,13 @@ export default function GroupAddPopup({
             <Ionicons name="camera-outline" size={24} color={colorScheme === "dark" ? "white" : "black"} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={addExampleItemFromBarcode} style={styles.iconButton}>
+          <TouchableOpacity onPress={() => setScannerVisible(true)}style={styles.iconButton}>
             <Ionicons name="barcode-outline" size={24} color={colorScheme === "dark" ? "white" : "black"} />
           </TouchableOpacity>
         </View>
       </View>
+
+      
 
       {/* Input Fields */}
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -209,6 +274,39 @@ export default function GroupAddPopup({
           </ThemedText>
         </TouchableOpacity>
       </View>
+
+      {/* Barcode Scanner Modal */}
+      <Modal visible={isScannerVisible} animationType="slide">
+  {hasPermission === null ? (
+    <View style={modalStyles.centeredView}>
+      <ThemedText>Requesting camera permission...</ThemedText>
+    </View>
+  ) : hasPermission === false ? (
+    <View style={modalStyles.centeredView}>
+      <ThemedText>No access to camera</ThemedText>
+    </View>
+  ) : (
+    <CameraView
+      //launchScanner = {true}
+      style={modalStyles.camera}
+      onBarcodeScanned={({ data }) => {
+        // Pass the scanned data as an object if needed:
+        handleBarCodeScanned({ data });
+        // Optionally, you can remove this extra call if you already call it inside handleBarCodeScanned.
+        // setScannerVisible(false);
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setScannerVisible(false)}
+        style={modalStyles.closeButton}
+      >
+        <ThemedText style={modalStyles.closeButtonText}>Close Scanner</ThemedText>
+      </TouchableOpacity>
+    </CameraView>
+  )}
+</Modal>
+
+      
     </ThemedView>
   );
 }
