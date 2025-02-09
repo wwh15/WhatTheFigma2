@@ -60,12 +60,8 @@ export default function HomeScreen() {
     }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Your Fridge Inventory</ThemedText>
-      </ThemedView>
-
-      {/* Open Add Group Popup */}
-      <ThemedView style={styles.modalContainer}>
         <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-          <ThemedText type="defaultSemiBold" style={styles.addButtonText}>Add Items in Group</ThemedText>
+          <ThemedText type="defaultSemiBold" style={styles.addButtonText}>Add Items</ThemedText>
         </TouchableOpacity>
       </ThemedView>
 
@@ -98,11 +94,14 @@ export default function HomeScreen() {
       )}
 
       {/* Group Add Popup */}
-      <Modal visible={isModalVisible} animationType="slide" transparent>
-        <GroupAddPopup
-          onClose={() => setModalVisible(false)}
-          onAddItems={addItemsInGroup}
-        />
+
+      <Modal visible={isModalVisible} animationType="fade" transparent>
+        <View style={styles.modalContainer}>
+          <GroupAddPopup
+            onClose={() => setModalVisible(false)}
+            onAddItems={addItemsInGroup}
+          />
+        </View>
       </Modal>
     </ParallaxScrollView>
   );

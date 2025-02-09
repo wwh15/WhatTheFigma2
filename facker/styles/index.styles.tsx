@@ -6,7 +6,7 @@ export default (theme: ColorSchemeName) =>
     titleContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: 20,
       marginBottom: 16,
     },
     inputContainer: {
@@ -16,18 +16,22 @@ export default (theme: ColorSchemeName) =>
       marginBottom: 12,
     },
     input: {
-      height: 40,
+      width: '35%',
+      height: 45,
       borderColor: theme === 'dark' ? '#555' : '#ccc',
       borderWidth: 1,
       borderRadius: 8,
-      paddingHorizontal: 10,
-      marginBottom: 10,
+      padding: 10,
+      marginHorizontal: 10,
       backgroundColor: theme === 'dark' ? '#3A3A3C' : '#FFFFFF',
       color: theme === 'dark' ? '#FFFFFF' : '#000000',
     },
     addButton: {
+      width: '25%',
+      height: 45,
       backgroundColor: '#007AFF',
-      paddingVertical: 10,
+      padding: 10,
+      marginHorizontal: 10,
       borderRadius: 8,
       alignItems: 'center',
     },
@@ -40,11 +44,13 @@ export default (theme: ColorSchemeName) =>
       marginTop: 20,
     },
     itemContainer: {
+      flex: 1,
+      width: '100%',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 12,
-      marginVertical: 6,
+      padding: 10,
+      marginVertical: 10,
       borderRadius: 8,
       backgroundColor: theme === 'dark' ? '#444' : '#E0F7FA',
     },
@@ -62,14 +68,14 @@ export default (theme: ColorSchemeName) =>
       fontSize: 16,
     },
     reactLogo: {
-      height: 500,
-      width: 1500,
+      height: '100%',
+      width: '100%',
       bottom: 0,
       left: 0,
       position: 'absolute',
     },
 
-    // 💡 New styles for GroupAddPopup.tsx
+    // styles for GroupAddPopup.tsx
     modalContainer: {
       flex: 1,
       justifyContent: 'center',
@@ -77,24 +83,18 @@ export default (theme: ColorSchemeName) =>
       backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
     },
     popupContainer: {
-      width: '85%',
+      width: '50%',
       backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
       padding: 20,
       borderRadius: 12,
       alignItems: 'center',
-      shadowColor: '#000',
-      shadowOpacity: 0.2,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 4,
-      elevation: 5, // For Android shadow
+      justifyContent: 'center',
     },
     confirmButton: {
       backgroundColor: '#34C759',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 8,
-      alignItems: 'center',
       marginTop: 10,
+      padding: 10,
+      borderRadius: 8,
     },
     confirmButtonText: {
       color: 'white',

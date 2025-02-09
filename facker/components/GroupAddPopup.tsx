@@ -41,33 +41,36 @@ export default function GroupAddPopup({
   };
 
   return (
-    <ThemedView style={styles.modalContainer}>
-      <ThemedText type="title">Add Items in Group</ThemedText>
+    <ThemedView style={styles.popupContainer}>
+      <ThemedText style={{padding: 30}} type="title">Add Items in Group</ThemedText>
 
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <TextInput
-        style={styles.input}
-        placeholder="Item Name"
-        placeholderTextColor="#555"
-        value={itemName}
-        onChangeText={setItemName}
+          style={[styles.input, {flex: 1, marginRight: 10}]}
+          placeholder="Item Name"
+          placeholderTextColor="#555"
+          value={itemName}
+          onChangeText={setItemName}
       />
       <TextInput
-        style={styles.input}
-        placeholder="Expiration Date (YYYY-MM-DD)"
-        placeholderTextColor="#555"
-        value={expirationDate}
-        onChangeText={setExpirationDate}
+          style={[styles.input, {flex: 1}]}
+          placeholder="Expiration Date (YYYY-MM-DD)"
+          placeholderTextColor="#555"
+          value={expirationDate}
+          onChangeText={setExpirationDate}
       />
-
       <TouchableOpacity style={styles.addButton} onPress={addItemToList}>
-        <ThemedText type="defaultSemiBold" style={styles.addButtonText}>
+          <ThemedText type="defaultSemiBold" style={styles.addButtonText}>
           Add to Group
-        </ThemedText>
+          </ThemedText>
       </TouchableOpacity>
+      </View>
 
+      {/* list of items */}
       <FlatList
         data={items}
         keyExtractor={(item, index) => index.toString()}
+        style={{width: '100%', alignContent: 'center'}}
         renderItem={({item, index}) => (
           <View style={styles.itemContainer}>
             <ThemedText>
@@ -86,19 +89,25 @@ export default function GroupAddPopup({
         )}
       />
 
-      <TouchableOpacity
-        style={styles.confirmButton}
-        onPress={() => onAddItems(items)}>
-        <ThemedText type="defaultSemiBold" style={styles.confirmButtonText}>
-          Save Group
-        </ThemedText>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', paddingHorizontal: 20 }}>
+        <TouchableOpacity
+          style={[styles.cancelButton, { alignSelf: 'flex-start' }]}
+          onPress={onClose}>
+          <ThemedText type="defaultSemiBold" style={styles.cancelButtonText}>
+            Cancel
+          </ThemedText>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-        <ThemedText type="defaultSemiBold" style={styles.cancelButtonText}>
-          Cancel
-        </ThemedText>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.confirmButton, { alignSelf: 'flex-end' }]}
+          onPress={() => onAddItems(items)}>
+          <ThemedText type="defaultSemiBold" style={styles.confirmButtonText}>
+            Save Group
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
     </ThemedView>
+
+
   );
 }
