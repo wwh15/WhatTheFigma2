@@ -82,13 +82,10 @@ export default (theme: ColorSchemeName) =>
       alignItems: "center",
       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     },
-    popupContainer: {
-      width: "50%",
-      backgroundColor: theme === "dark" ? "#2C2C2E" : "#FFFFFF",
-      padding: 20,
-      borderRadius: 12,
-      alignItems: "center",
-      justifyContent: "center",
+    emptyPopupContainer: {
+      alignItems: 'center',
+      backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
+      marginTop: 20,
     },
     confirmButton: {
       backgroundColor: "#34C759",
@@ -109,5 +106,45 @@ export default (theme: ColorSchemeName) =>
     cancelButtonText: {
       color: "white",
       fontSize: 16,
+    },
+    titleRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      paddingBottom: 10,
+    },
+    titleText: {
+      flex: 1,
+      textAlign: "center",
+    },
+    iconButtonsContainer: {
+      flexDirection: "row",
+    },
+    iconButton: {
+      padding: 10,
+    },
+    popupContainer: {
+      width: '50%', // Responsive width
+      height: '50%', // Fixed height for modal
+      backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
+      padding: 20,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      overflow: 'hidden', // Prevents scrolling outside the modal
+    },
+    
+    scrollableListContainer: {
+      flex: 1, // Allows the list to take up remaining space
+      width: '100%',
+      maxHeight: 250, // Limit the height so it doesn't overflow
+    },
+    buttonRow: {
+      flexDirection: "row",
+      width: "100%",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingTop: 10,
     },
   });
