@@ -7,7 +7,7 @@ export default (theme: ColorSchemeName) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 20,
-      marginBottom: 16,
+      padding: 10,
     },
     inputContainer: {
       padding: 12,
@@ -118,7 +118,7 @@ export default (theme: ColorSchemeName) =>
       padding: 10,
     },
     input: {
-      height: 45,
+      flex: 1,
       borderColor: theme === "dark" ? "#555" : "#ccc",
       borderWidth: 1,
       borderRadius: 8,
@@ -158,7 +158,6 @@ export default (theme: ColorSchemeName) =>
       alignItems: "center",
       backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     },
-    
     modalContent: {
       width: "85%",
       backgroundColor: theme === "dark" ? "black" : "white", // ✅ Adjust based on theme
@@ -166,7 +165,6 @@ export default (theme: ColorSchemeName) =>
       borderRadius: 10,
       alignItems: "center",
     },
-    
     closeButton: {
       marginTop: 10,
       backgroundColor: "#007AFF",
@@ -174,9 +172,8 @@ export default (theme: ColorSchemeName) =>
       paddingHorizontal: 20,
       borderRadius: 6,
     },
-    
     closeButtonText: {
       color: "white",
       fontSize: 16,
-    },    
+    },
   });

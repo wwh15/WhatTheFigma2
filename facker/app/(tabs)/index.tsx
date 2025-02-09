@@ -78,7 +78,7 @@ export default function HomeScreen() {
 
       <View style={styles.headerContainer}>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Your Fridge Inventory</ThemedText>
+          <ThemedText type="title">Your Inventory</ThemedText>
         </ThemedView>
 
         <TouchableOpacity
@@ -99,33 +99,55 @@ export default function HomeScreen() {
         </ThemedView>
       ) : (
         <FlatList
-          data={inventory}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({item, index}) => (
-            <View style={styles.itemContainer}>
-              <View style={styles.itemTextContainer}>
-                <ThemedText
-                  type="subtitle"
-                  style={{color: colorScheme === "dark" ? "white" : "black"}}>
-                  {item.name}
-                </ThemedText>
-                <ThemedText
-                  style={{color: colorScheme === "dark" ? "white" : "black"}}>
-                  Expires: {item.expires}
-                </ThemedText>
-              </View>
+        data={inventory}
+        keyExtractor={(item, index) => index.toString()}
+        ListHeaderComponent={
+          <>
+            <Image
+              source={require("@/assets/images/produce.png")}
+              style={styles.reactLogo}
+            />
+            <View style={styles.headerContainer}>
+              <ThemedView style={styles.titleContainer}>
+                <ThemedText type="title">Your Inventory</ThemedText>
+              </ThemedView>
+
               <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => deleteItem(index)}>
-                <ThemedText
-                  type="defaultSemiBold"
-                  style={styles.deleteButtonText}>
-                  X
+                style={styles.addButton}
+                onPress={() => setModalVisible(true)}
+              >
+                <ThemedText type="defaultSemiBold" style={styles.addButtonText}>
+                  Add Items
                 </ThemedText>
               </TouchableOpacity>
             </View>
-          )}
-        />
+          </>
+        }
+        renderItem={({ item, index }) => (
+          <View style={styles.itemContainer}>
+            <View style={styles.itemTextContainer}>
+              <ThemedText
+                type="subtitle"
+                style={{ color: colorScheme === "dark" ? "white" : "black" }}>
+                {item.name}
+              </ThemedText>
+              <ThemedText style={{ color: colorScheme === "dark" ? "white" : "black" }}>
+                Expires: {item.expires}
+              </ThemedText>
+            </View>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => deleteItem(index)}>
+              <ThemedText
+                type="defaultSemiBold"
+                style={styles.deleteButtonText}>
+                X
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+
       )}
 
       {/* Group Add Popup */}

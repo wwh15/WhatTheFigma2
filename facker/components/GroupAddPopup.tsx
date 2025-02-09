@@ -1,14 +1,5 @@
-import { useState } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-  FlatList,
-  Alert,
-  useColorScheme,
-  Platform,
-} from "react-native";
+import { useState, useEffect } from "react";
+import { View, TextInput, TouchableOpacity, Modal, FlatList, Alert, useColorScheme, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -37,7 +28,6 @@ export default function GroupAddPopup({
       setSelectedDate(date);
       setExpirationDate(date.toISOString().split("T")[0]); // Format as YYYY-MM-DD
     }
-    setShowDatePicker(false); // Close picker after selecting
   };
 
   // Adds example item when Camera button is pressed
@@ -51,6 +41,11 @@ export default function GroupAddPopup({
   };
 
   const addItemToList = () => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(expirationDate)) {
+      Alert.alert("Error", "Please enter a valid date in YYYY-MM-DD format.");
+      return;
+    }
     if (!itemName || !expirationDate) {
       Alert.alert("Error", "Please enter both item name and expiration date.");
       return;
@@ -64,6 +59,12 @@ export default function GroupAddPopup({
   const removeItem = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
   };
+
+  useEffect(() => {
+    if (showDatePicker) {
+      handleDateChange(null, selectedDate);
+    }
+  }, [showDatePicker]);
 
   return (
     <ThemedView style={styles.popupContainer}>
@@ -86,76 +87,72 @@ export default function GroupAddPopup({
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         {/* Item Name Input */}
         <TextInput
-          style={[styles.input, { flex: 1, marginRight: 10 }]}
+          style={styles.input}
           placeholder="Item Name"
           placeholderTextColor="#555"
           value={itemName}
           onChangeText={setItemName}
         />
-        {/* Date Picker in a Modal for Small Screens */}
-        <View>
-          {Platform.OS === "web" ? (
-            // Web: Use HTML <input type="date">
-            <TextInput
-              style={styles.input}
-              placeholder="Select Date"
-              placeholderTextColor="#555"
-              value={expirationDate}
-              onChangeText={setExpirationDate}
-              // onFocus={(e) => (e.target.type = "date")} // Opens the date picker on focus
-            />
-          ) : (
-            // Mobile: Show a button that opens the Date Picker
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <ThemedText type="default" style={{ color: "#555" }}>
-                Select Date
-              </ThemedText>
-            </TouchableOpacity>
-          )}
+        {/* Date Picker */}
+        {Platform.OS === "web" ? (
+          <TextInput
+            style={styles.input}
+            placeholder="Select date (YYYY-MM-DD)"
+            placeholderTextColor="#555"
+            value={expirationDate}
+            onChangeText={setExpirationDate}
+          />
+        ) : (
+          // Mobile: Show a button that opens the Date Picker
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <ThemedText type="default" style={{ color: "#555" }}>
+              {expirationDate === "" ? "Select Date" : expirationDate}
+            </ThemedText>
+          </TouchableOpacity>
+        )}
 
-          {/* Use a Modal for iOS (Prevents Large Date Picker Issue) */}
-          {showDatePicker && Platform.OS === "ios" && (
-            <Modal
-              transparent
-              animationType="none"
-              visible={showDatePicker}
-              onRequestClose={() => setShowDatePicker(false)}
-            >
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <DateTimePicker
-                    value={selectedDate}
-                    mode="date"
-                    display="spinner"
-                    onChange={handleDateChange}
-                    textColor={colorScheme === "dark" ? "white" : "black"} // ✅ Ensures text is visible
-                    themeVariant={colorScheme === "dark" ? "dark" : "light"} // ✅ Ensures correct mode
-                  />
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={() => setShowDatePicker(false)}
-                  >
-                    <ThemedText type="defaultSemiBold" style={styles.closeButtonText}>
-                      Done
-                    </ThemedText>
-                  </TouchableOpacity>
-                </View>
+        {/* iOS Picker */}
+        {showDatePicker && Platform.OS === "ios" && (
+          <Modal
+            transparent
+            animationType="none"
+            visible={showDatePicker}
+            onRequestClose={() => setShowDatePicker(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={handleDateChange}
+                  textColor={colorScheme === "dark" ? "white" : "black"}
+                  themeVariant={colorScheme === "dark" ? "dark" : "light"}
+                />
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <ThemedText type="defaultSemiBold" style={styles.closeButtonText}>
+                    Done
+                  </ThemedText>
+                </TouchableOpacity>
               </View>
-            </Modal>
-          )}
-          {/* 📌 Android Picker (No Modal Needed) */}
-          {showDatePicker && Platform.OS === "android" && (
-            <DateTimePicker
-              value={selectedDate}
-              mode="date"
-              display="default" // Keeps it compact on Android
-              onChange={handleDateChange}
-            />
-          )}
-        </View>
+            </View>
+          </Modal>
+        )}
+        {/* Android Picker */}
+        {showDatePicker && Platform.OS === "android" && (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="default" // Keeps it compact on Android
+            onChange={handleDateChange}
+          />
+        )}
         
         {/* Add Item Button */}
         <TouchableOpacity style={styles.addButton} onPress={addItemToList}>
