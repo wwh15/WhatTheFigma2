@@ -199,7 +199,7 @@ const modalStyles = StyleSheet.create({
         `https://api.upcitemdb.com/prod/trial/lookup?upc=${data}`
       );
       const json = await response.json();
-      console.log(json);
+      //console.log(json);
       if (json.items[0]) {
         const apiProduct = json.items[0];
         const fetchedItemName = apiProduct.title || "Unknown Item";
