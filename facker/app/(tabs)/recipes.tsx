@@ -24,19 +24,19 @@ export default function Recipes() {
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const storedItems = await AsyncStorage.getItem("inventory");
-        if (storedItems) {
-          const parsedItems = JSON.parse(storedItems);
-          setInventory(parsedItems.map((item: {name: string}) => item.name));
-        }
-      } catch (error) {
-        console.error("Error loading inventory:", error);
+  const fetchInventory = async () => {
+    try {
+      const storedItems = await AsyncStorage.getItem("inventory");
+      if (storedItems) {
+        const parsedItems = JSON.parse(storedItems);
+        setInventory(parsedItems.map((item: {name: string}) => item.name));
       }
-    };
+    } catch (error) {
+      console.error("Error loading inventory:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchInventory();
   }, []);
 
@@ -47,6 +47,8 @@ export default function Recipes() {
     }
 
     setIsLoading(true);
+
+    fetchInventory();
 
     const ingredients = inventory.join(",");
     const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;

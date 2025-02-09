@@ -109,7 +109,7 @@ export default function GroupAddPopup({
             onPress={() => setShowDatePicker(true)}
           >
             <ThemedText type="default" style={{ color: "#555" }}>
-              {expirationDate === "" ? "Select Date" : expirationDate}
+              {expirationDate === "" ? "Date" : expirationDate}
             </ThemedText>
           </TouchableOpacity>
         )}
