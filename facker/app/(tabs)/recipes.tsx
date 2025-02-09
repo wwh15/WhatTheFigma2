@@ -9,6 +9,7 @@ import {
   useColorScheme,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
 import {ThemedText} from "@/components/ThemedText";
 import {ThemedView} from "@/components/ThemedView";
 
@@ -51,7 +52,7 @@ export default function Recipes() {
     fetchInventory();
 
     const ingredients = inventory.join(",");
-    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&ranking=2&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;
 
     try {
       const response = await fetch(url);
@@ -72,12 +73,18 @@ export default function Recipes() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Recipe Finder
-      </ThemedText>
-
+    <ParallaxScrollView
+      headerBackgroundColor={{light: "#A1CEDC", dark: "#1D3D47"}}
+      headerImage={
+        <Image
+          source={require("@/assets/images/recipe.jpg")}
+          style={styles.reactLogo}
+        />
+      }>
       <View style={styles.filterContainer}>
+        <ThemedText type="title" style={styles.title}>
+          Recipe Finder
+        </ThemedText>
         <TouchableOpacity style={styles.searchButton} onPress={fetchRecipes}>
           <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
             Find Recipes
@@ -103,6 +110,6 @@ export default function Recipes() {
           )}
         />
       )}
-    </ThemedView>
+    </ParallaxScrollView>
   );
 }
