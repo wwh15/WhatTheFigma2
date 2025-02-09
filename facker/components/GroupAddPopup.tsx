@@ -69,12 +69,6 @@ const modalStyles = StyleSheet.create({
     setItems([...items, { name: "Example Item (Camera)", expires: "2025-03-01" }]);
   }
 
-  // Adds example item when Barcode button is pressed
-  //const addExampleItemFromBarcode = () => {
-//
-  //  setItems([...items, { name: "Example Item (Barcode)", expires: "2025-02-15" }]);
- // };
-
  // Handle barcode scanning
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     setScannerVisible(false); // Close scanner after scanning
@@ -146,14 +140,12 @@ const modalStyles = StyleSheet.create({
         </View>
       </View>
 
-      
-
       {/* Input Fields */}
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         {/* Item Name Input */}
         <TextInput
           style={styles.input}
-          placeholder="Item Name"
+          placeholder="Item name"
           placeholderTextColor="#555"
           value={itemName}
           onChangeText={setItemName}
@@ -169,14 +161,14 @@ const modalStyles = StyleSheet.create({
           />
         ) : (
           // Mobile: Show a button that opens the Date Picker
-          <TouchableOpacity
+            <TouchableOpacity
             style={styles.input}
             onPress={() => setShowDatePicker(true)}
-          >
-            <ThemedText type="default" style={{ color: "#555" }}>
-              {expirationDate === "" ? "Date" : expirationDate}
+            >
+            <ThemedText type="default" style={{ color: "#555", fontSize: 14 }}>
+              { expirationDate === "" ? "Date" : expirationDate }
             </ThemedText>
-          </TouchableOpacity>
+            </TouchableOpacity>
         )}
 
         {/* iOS Picker */}
@@ -237,13 +229,13 @@ const modalStyles = StyleSheet.create({
         <View style={styles.scrollableListContainer}>
           <FlatList
             data={items}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(_, index) => index.toString()}
             style={{ flex: 1 }}
             contentContainerStyle={{ paddingBottom: 10 }}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item, index }) => (
               <View style={styles.itemContainer}>
-                <ThemedText>
+                <ThemedText style={{ flex: 1 }}>
                   {item.name} - Expires: {item.expires}
                 </ThemedText>
                 <TouchableOpacity
@@ -277,34 +269,34 @@ const modalStyles = StyleSheet.create({
 
       {/* Barcode Scanner Modal */}
       <Modal visible={isScannerVisible} animationType="slide">
-  {hasPermission === null ? (
-    <View style={modalStyles.centeredView}>
-      <ThemedText>Requesting camera permission...</ThemedText>
-    </View>
-  ) : hasPermission === false ? (
-    <View style={modalStyles.centeredView}>
-      <ThemedText>No access to camera</ThemedText>
-    </View>
-  ) : (
-    <CameraView
-      //launchScanner = {true}
-      style={modalStyles.camera}
-      onBarcodeScanned={({ data }) => {
-        // Pass the scanned data as an object if needed:
-        handleBarCodeScanned({ data });
-        // Optionally, you can remove this extra call if you already call it inside handleBarCodeScanned.
-        // setScannerVisible(false);
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => setScannerVisible(false)}
-        style={modalStyles.closeButton}
-      >
-        <ThemedText style={modalStyles.closeButtonText}>Close Scanner</ThemedText>
-      </TouchableOpacity>
-    </CameraView>
-  )}
-</Modal>
+      {hasPermission === null ? (
+        <View style={modalStyles.centeredView}>
+          <ThemedText>Requesting camera permission...</ThemedText>
+        </View>
+      ) : hasPermission === false ? (
+        <View style={modalStyles.centeredView}>
+          <ThemedText>No access to camera</ThemedText>
+        </View>
+      ) : (
+        <CameraView
+          //launchScanner = {true}
+          style={modalStyles.camera}
+          onBarcodeScanned={({ data }) => {
+            // Pass the scanned data as an object if needed:
+            handleBarCodeScanned({ data });
+            // Optionally, you can remove this extra call if you already call it inside handleBarCodeScanned.
+            // setScannerVisible(false);
+          }}
+        >
+        <TouchableOpacity
+            onPress={() => setScannerVisible(false)}
+            style={modalStyles.closeButton}
+          >
+          <ThemedText style={modalStyles.closeButtonText}>Close Scanner</ThemedText>
+        </TouchableOpacity>
+        </CameraView>
+      )}
+      </Modal>
 
       
     </ThemedView>
