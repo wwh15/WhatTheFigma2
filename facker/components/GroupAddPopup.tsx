@@ -9,6 +9,60 @@ import { Camera , CameraView} from "expo-camera"; // Import Camera from expo-cam
 
 import createStyles from "../styles/index.styles";
 
+interface ShelfProduct {
+  ID: number;
+  Category_ID: number;
+  Name: string;
+  Name_subtitle: string;
+  Keywords: string;
+  DOP_Refrigerate_Min?: number; // Shelf life in days
+  DOP_Refrigerate_Max?: number;
+  DOP_Refrigerate_Metric?: string;
+  // ... add additional fields if needed
+}
+
+/**
+ * Merges an array of single-key objects into one object.
+ * Example: [ { "Name": "Lettuce" }, { "Keywords": "Lettuce,leaf,spinach" } ]
+ * becomes: { Name: "Lettuce", Keywords: "Lettuce,leaf,spinach" }
+ */
+function mergeProductData(dataArray: any[]): { [key: string]: any } {
+  return dataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+}
+
+/**
+ * Matches the API product (using its title and description) against the shelf-life database.
+ * Returns the shelf life in days (using DOP_Refrigerate_Min) if a match is found.
+ */
+function matchShelfLife(
+  apiProduct: { title: string; description: string },
+  shelfData: ShelfProduct[]
+): number | null {
+  const titleLower = apiProduct.title.toLowerCase();
+  const descriptionLower = apiProduct.description.toLowerCase();
+
+  for (let product of shelfData) {
+    if (product.Keywords) {
+      const keywords = product.Keywords.split(",").map((k) => k.trim().toLowerCase());
+      const isMatch = keywords.some(
+        (keyword) =>
+          titleLower.includes(keyword) || descriptionLower.includes(keyword)
+      );
+      console.log(product);
+      if (isMatch) {
+        // Prefer DOP_Refrigerate_Min if available; otherwise, use Refrigerate_Min
+        if (product.DOP_Refrigerate_Max != null) {
+          return product.DOP_Refrigerate_Max;
+        } else if (product.Refrigerate_Max!= null) {
+          return product.Refrigerate_Max;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+
 export default function GroupAddPopup({
   onClose,
   onAddItems,
@@ -23,10 +77,13 @@ export default function GroupAddPopup({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isScannerVisible, setScannerVisible] = useState(false); // State for barcode scanner
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
+  // New state: shelf-life database (fetched from an online JSON)
+  const [shelfLifeDatabase, setShelfLifeDatabase] = useState<ShelfProduct[]>([]);
 
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
 
+  const SHELF_LIFE_DB_URL = "https://www.fsis.usda.gov/shared/data/EN/foodkeeper.json";
  // Request camera permissions
  useEffect(() => {
   (async () => {
@@ -34,6 +91,69 @@ export default function GroupAddPopup({
     setHasPermission(status === "granted");
   })();
 }, []);
+
+useEffect(() => {
+  fetch(SHELF_LIFE_DB_URL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok for shelf-life data.");
+      }
+      //console.log("Shelf-life DB response:", response);
+      return response.json();
+    })
+    .then((data) => {
+      //console.log("Raw shelf-life DB data:", data);
+      let products: ShelfProduct[] = [];
+
+      if (data.sheets) {
+        // Locate the sheet named "Product"
+        const productSheet = data.sheets.find((sheet: any) => sheet.name === "Product");
+        if (productSheet && Array.isArray(productSheet.data)) {
+          // Each element in productSheet.data is an array of objects.
+          // For each row, merge the objects into a single product object.
+          products = productSheet.data.map((row: any[]) =>
+            row.reduce((acc: any, item: any) => ({ ...acc, ...item }), {})
+          );
+          //console.log("Extracted products from 'Product' sheet:", products);
+        } else {
+          //console.error("Product sheet not found or has no data:", productSheet);
+        }
+      } else if (Array.isArray(data)) {
+        // Fallback if data is a plain array.
+        products = data.map((product: any) =>
+          Array.isArray(product)
+            ? product.reduce((acc: any, item: any) => ({ ...acc, ...item }), {})
+            : product
+        );
+      } else if (data && typeof data === "object") {
+        // Fallback for objects with common keys.
+        if (Array.isArray(data.products)) {
+          products = data.products.map((product: any) =>
+            Array.isArray(product)
+              ? product.reduce((acc: any, item: any) => ({ ...acc, ...item }), {})
+              : product
+          );
+        } else if (Array.isArray(data.items)) {
+          products = data.items.map((product: any) =>
+            Array.isArray(product)
+              ? product.reduce((acc: any, item: any) => ({ ...acc, ...item }), {})
+              : product
+          );
+        } else {
+          products = [data];
+        }
+      } else {
+        //console.error("Unexpected shelf-life data format:", data);
+      }
+      //console.log("Final processed shelf-life products:", products);
+      setShelfLifeDatabase(products);
+    })
+    .catch((err) => {
+      console.error("Error fetching shelf-life data:", err);
+    });
+}, []);
+
+
 
 const modalStyles = StyleSheet.create({
   camera: {
@@ -72,20 +192,41 @@ const modalStyles = StyleSheet.create({
  // Handle barcode scanning
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     setScannerVisible(false); // Close scanner after scanning
-
+    //console.log(data);
     try {
       // Fetch item details using an external API
       const response = await fetch(
         `https://api.upcitemdb.com/prod/trial/lookup?upc=${data}`
       );
       const json = await response.json();
-
-      if (json) {
-        const itemName = json.items[0].title || "Unknown Item";
-        setItems([
-          ...items,
-          { name: itemName, expires: "2025-12-31" }, // Arbitrary expiration date
-        ]);
+      console.log(json);
+      if (json.items[0]) {
+        const apiProduct = json.items[0];
+        const fetchedItemName = apiProduct.title || "Unknown Item";
+        console.log(fetchedItemName);
+        setItemName(fetchedItemName);
+        //setItems([
+         // ...items,
+         // { name: itemName, expires: "2025-12-31" }, // Arbitrary expiration date
+        //]);
+        if (shelfLifeDatabase.length > 0) {
+          const shelfLifeDays = matchShelfLife(
+            { title: apiProduct.title, description: apiProduct.description },
+            shelfLifeDatabase
+          );
+          console.log(shelfLifeDays);
+          if (shelfLifeDays) {
+            const today = new Date();
+            const expiryDateCalc = new Date(
+              today.getTime() + shelfLifeDays * 24 * 60 * 60 * 1000
+            );
+            // Format the expiry date as YYYY-MM-DD and update state.
+            setExpirationDate(expiryDateCalc.toISOString().split("T")[0]);
+          } else {
+            // If no shelf-life match is found, you might choose to leave expirationDate unchanged or alert the user.
+            Alert.alert("Shelf-Life Not Found", "No matching shelf-life data found for this item.");
+          }
+        }
       } 
       else {
         Alert.alert("Error", "Unable to fetch item details for this barcode.");
