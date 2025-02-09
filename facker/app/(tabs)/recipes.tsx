@@ -9,6 +9,7 @@ import {
   useColorScheme,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
 import {ThemedText} from "@/components/ThemedText";
 import {ThemedView} from "@/components/ThemedView";
 
@@ -70,7 +71,14 @@ export default function Recipes() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ParallaxScrollView
+      headerBackgroundColor={{light: "#A1CEDC", dark: "#1D3D47"}}
+      headerImage={
+        <Image
+          source={require("@/assets/images/recipe.jpg")}
+          style={styles.reactLogo}
+        />
+      }>
       <ThemedText type="title" style={styles.title}>
         Recipe Finder
       </ThemedText>
@@ -101,6 +109,6 @@ export default function Recipes() {
           )}
         />
       )}
-    </ThemedView>
+    </ParallaxScrollView>
   );
 }
