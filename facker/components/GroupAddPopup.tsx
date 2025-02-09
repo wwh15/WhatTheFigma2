@@ -3,14 +3,16 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  Modal,
   FlatList,
   Alert,
   useColorScheme,
-  ScrollView,
+  Platform,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Ionicons } from "@expo/vector-icons"; // Icons for buttons
+import { Ionicons } from "@expo/vector-icons";
 
 import createStyles from "../styles/index.styles";
 
@@ -24,8 +26,19 @@ export default function GroupAddPopup({
   const [items, setItems] = useState<{ name: string; expires: string }[]>([]);
   const [itemName, setItemName] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme);
+
+  const handleDateChange = (_event: unknown, date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setExpirationDate(date.toISOString().split("T")[0]); // Format as YYYY-MM-DD
+    }
+    setShowDatePicker(false); // Close picker after selecting
+  };
 
   // Adds example item when Camera button is pressed
   const addExampleItemsFromCamera = () => {
@@ -56,7 +69,7 @@ export default function GroupAddPopup({
     <ThemedView style={styles.popupContainer}>
       {/* Title + Camera & Barcode Buttons */}
       <View style={styles.titleRow}>
-        <ThemedText type="title" style={styles.titleText}>Add Items in Group</ThemedText>
+        <ThemedText type="title" style={styles.titleText}>Add Items</ThemedText>
 
         <View style={styles.iconButtonsContainer}>
           <TouchableOpacity onPress={addExampleItemsFromCamera} style={styles.iconButton}>
@@ -71,6 +84,7 @@ export default function GroupAddPopup({
 
       {/* Input Fields */}
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        {/* Item Name Input */}
         <TextInput
           style={[styles.input, { flex: 1, marginRight: 10 }]}
           placeholder="Item Name"
@@ -78,16 +92,75 @@ export default function GroupAddPopup({
           value={itemName}
           onChangeText={setItemName}
         />
-        <TextInput
-          style={[styles.input, { flex: 1 }]}
-          placeholder="Expiration Date (YYYY-MM-DD)"
-          placeholderTextColor="#555"
-          value={expirationDate}
-          onChangeText={setExpirationDate}
-        />
+        {/* Date Picker in a Modal for Small Screens */}
+        <View>
+          {Platform.OS === "web" ? (
+            // Web: Use HTML <input type="date">
+            <TextInput
+              style={styles.input}
+              placeholder="Select Date"
+              placeholderTextColor="#555"
+              value={expirationDate}
+              onChangeText={setExpirationDate}
+              // onFocus={(e) => (e.target.type = "date")} // Opens the date picker on focus
+            />
+          ) : (
+            // Mobile: Show a button that opens the Date Picker
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <ThemedText type="default" style={{ color: "#555" }}>
+                Select Date
+              </ThemedText>
+            </TouchableOpacity>
+          )}
+
+          {/* Use a Modal for iOS (Prevents Large Date Picker Issue) */}
+          {showDatePicker && Platform.OS === "ios" && (
+            <Modal
+              transparent
+              animationType="none"
+              visible={showDatePicker}
+              onRequestClose={() => setShowDatePicker(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                    textColor={colorScheme === "dark" ? "white" : "black"} // ✅ Ensures text is visible
+                    themeVariant={colorScheme === "dark" ? "dark" : "light"} // ✅ Ensures correct mode
+                  />
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <ThemedText type="defaultSemiBold" style={styles.closeButtonText}>
+                      Done
+                    </ThemedText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          )}
+          {/* 📌 Android Picker (No Modal Needed) */}
+          {showDatePicker && Platform.OS === "android" && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="default" // Keeps it compact on Android
+              onChange={handleDateChange}
+            />
+          )}
+        </View>
+        
+        {/* Add Item Button */}
         <TouchableOpacity style={styles.addButton} onPress={addItemToList}>
           <ThemedText type="defaultSemiBold" style={styles.addButtonText}>
-            Add to Group
+            Add item
           </ThemedText>
         </TouchableOpacity>
       </View>
@@ -135,7 +208,7 @@ export default function GroupAddPopup({
 
         <TouchableOpacity style={styles.confirmButton} onPress={() => onAddItems(items)}>
           <ThemedText type="defaultSemiBold" style={styles.confirmButtonText}>
-            Save Group
+            Save
           </ThemedText>
         </TouchableOpacity>
       </View>

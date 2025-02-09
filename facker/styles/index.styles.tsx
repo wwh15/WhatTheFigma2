@@ -15,25 +15,17 @@ export default (theme: ColorSchemeName) =>
       borderRadius: 8,
       marginBottom: 12,
     },
-    input: {
-      width: "35%",
-      height: 45,
-      borderColor: theme === "dark" ? "#555" : "#ccc",
-      borderWidth: 1,
-      borderRadius: 8,
-      padding: 10,
-      marginHorizontal: 10,
-      backgroundColor: theme === "dark" ? "#3A3A3C" : "#FFFFFF",
-      color: theme === "dark" ? "#FFFFFF" : "#000000",
+    headerContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      marginBottom: 10,
     },
     addButton: {
-      width: "25%",
-      height: 45,
+      marginLeft: 10,
       backgroundColor: "#007AFF",
       padding: 10,
-      marginHorizontal: 10,
-      borderRadius: 8,
-      alignItems: "center",
+      borderRadius: 6,
     },
     addButtonText: {
       color: "white",
@@ -80,7 +72,6 @@ export default (theme: ColorSchemeName) =>
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     },
     emptyPopupContainer: {
       flex: 1,
@@ -126,9 +117,21 @@ export default (theme: ColorSchemeName) =>
     iconButton: {
       padding: 10,
     },
+    input: {
+      height: 45,
+      borderColor: theme === "dark" ? "#555" : "#ccc",
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 10,
+      marginHorizontal: 10,
+      backgroundColor: theme === "dark" ? "#3A3A3C" : "#FFFFFF",
+      color: theme === "dark" ? "#FFFFFF" : "#000000",
+    },
     popupContainer: {
-      width: '50%',
-      height: '50%',
+      width: '90%',
+      maxWidth: 600,
+      height: '80%',
+      maxHeight: 500,
       backgroundColor: theme === 'dark' ? '#2C2C2E' : '#FFFFFF',
       padding: 20,
       borderRadius: 12,
@@ -138,6 +141,7 @@ export default (theme: ColorSchemeName) =>
     },
     scrollableListContainer: {
       flex: 1,
+      paddingTop: 20,
       width: '100%',
       maxHeight: '100%',
     },
@@ -147,5 +151,32 @@ export default (theme: ColorSchemeName) =>
       justifyContent: "space-between",
       paddingHorizontal: 20,
       paddingTop: 10,
+    }, 
+    modalOverlay: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     },
+    
+    modalContent: {
+      width: "85%",
+      backgroundColor: theme === "dark" ? "black" : "white", // ✅ Adjust based on theme
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+    },
+    
+    closeButton: {
+      marginTop: 10,
+      backgroundColor: "#007AFF",
+      paddingVertical: 8,
+      paddingHorizontal: 20,
+      borderRadius: 6,
+    },
+    
+    closeButtonText: {
+      color: "white",
+      fontSize: 16,
+    },    
   });
