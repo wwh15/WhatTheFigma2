@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-
+import { Camera , CameraView} from "expo-camera"; // Import Camera from expo-camera
 
 import createStyles from "../styles/index.styles";
 
