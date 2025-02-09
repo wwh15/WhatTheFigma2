@@ -27,7 +27,8 @@ export default function Recipes() {
 
   const fetchInventory = async () => {
     try {
-      const storedItems = await AsyncStorage.getItem("inventory");
+      let storedItems = await AsyncStorage.getItem("inventory");
+      console.log(storedItems);
       if (storedItems) {
         const parsedItems = JSON.parse(storedItems);
         setInventory(parsedItems.map((item: {name: string}) => item.name));
@@ -37,19 +38,19 @@ export default function Recipes() {
     }
   };
 
+  // Load inventory on component mount
   useEffect(() => {
     fetchInventory();
-  }, []);
+  }, []); // Runs only once when the component mounts
 
   const fetchRecipes = async () => {
+    await fetchInventory();
     if (inventory.length === 0) {
       Alert.alert("No ingredients", "Add ingredients to your inventory first.");
       return;
     }
 
     setIsLoading(true);
-
-    fetchInventory();
 
     const ingredients = inventory.join(",");
     const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=5&ranking=2&apiKey=${SPOONACULAR_API_KEY}&ignorePantry=true`;
